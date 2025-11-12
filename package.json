@@ -1,0 +1,30 @@
+{
+  "name": "gravity-box",
+  "version": "1.0.0",
+  "description": "a silly little game",
+  "main": "vite.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/v1nshul/gravity-box.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/v1nshul/gravity-box/issues"
+  },
+  "homepage": "https://github.com/v1nshul/gravity-box#readme",
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "vite": "^7.2.2"
+  }
+}
