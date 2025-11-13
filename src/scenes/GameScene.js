@@ -13,6 +13,7 @@ export default class GameScene extends Phaser.Scene {
       }
     });
     this.plank = null;
+    this.planks = []; // array of planks per level (for multi-plank levels)
     this.simulationStarted = false;
     this.ball = null;
     this.basket = null;
@@ -24,19 +25,27 @@ export default class GameScene extends Phaser.Scene {
     this.ballStillTimer = null; // timer to detect when ball stops moving
     this.ballLastPos = { x: 0, y: 0 }; // track ball position to detect stillness
     this.plankRotation = 0; // track plank rotation angle
+    this.cursors = null;
+    this.rotateLeftKey = null;
+    this.rotateRightKey = null;
+    this.rotateSpeed = 2; // degrees per frame when holding key
     // tuning values
     this.plankRestitution = 0.6;
     this.plankFriction = 0.2;
     this.ballRestitution = 0.9;
     this.ballFriction = 0.005;
+    this.rotateLeftActive = false;
+    this.rotateRightActive = false;
+    this.ballsRemaining = 3; // fixed number of balls per level
+    this.ballsPerLevel = 3; // default balls; can be overridden per level
 
-    // simple level definitions: basket position and obstacles
+    // simple level definitions: basket position, obstacles, and planks per level
     this.levels = [
-      { basket: { x: 400, y: 580 }, obstacles: [] },
-      { basket: { x: 550, y: 560 }, obstacles: [{ x: 300, y: 420, w: 200, h: 20, angle: -15 }] },
-      { basket: { x: 250, y: 560 }, obstacles: [{ x: 450, y: 400, w: 180, h: 20, angle: 20 }] },
-      { basket: { x: 600, y: 520 }, obstacles: [{ x: 400, y: 350, w: 220, h: 20, angle: -30 }, { x: 200, y: 300, w: 120, h: 20, angle: 10 }] },
-      { basket: { x: 400, y: 520 }, obstacles: [{ x: 300, y: 360, w: 160, h: 20, angle: 0 }, { x: 500, y: 300, w: 160, h: 20, angle: 15 }] }
+      { basket: { x: 400, y: 580 }, obstacles: [], planksPerLevel: 1, balls: 3 },
+      { basket: { x: 550, y: 560 }, obstacles: [{ x: 300, y: 420, w: 200, h: 20, angle: -15 }], planksPerLevel: 1, balls: 3 },
+      { basket: { x: 250, y: 560 }, obstacles: [{ x: 450, y: 400, w: 180, h: 20, angle: 20 }], planksPerLevel: 2, balls: 3 },
+      { basket: { x: 600, y: 520 }, obstacles: [{ x: 400, y: 350, w: 220, h: 20, angle: -30 }, { x: 200, y: 300, w: 120, h: 20, angle: 10 }], planksPerLevel: 2, balls: 3 },
+      { basket: { x: 400, y: 520 }, obstacles: [{ x: 300, y: 360, w: 160, h: 20, angle: 0 }, { x: 500, y: 300, w: 160, h: 20, angle: 15 }], planksPerLevel: 3, balls: 3 }
     ];
   }
 
@@ -57,6 +66,12 @@ export default class GameScene extends Phaser.Scene {
       this.score = 0;
       console.log('No data provided, using defaults - Level: 1, Score: 0');
     }
+
+    // Set balls remaining based on current level config
+    const levelConfig = this.levels[Math.max(0, Math.min(this.levels.length - 1, this.currentLevel - 1))];
+    this.ballsPerLevel = levelConfig.balls || 3;
+    this.ballsRemaining = this.ballsPerLevel;
+    console.log('Level config: planksPerLevel=', levelConfig.planksPerLevel, 'balls=', this.ballsPerLevel);
 
     // Get matter plugin (robust to plugin availability)
     const matter = this.matter || (this.sys && this.sys.matter) || null;
@@ -88,42 +103,58 @@ export default class GameScene extends Phaser.Scene {
     this.input.keyboard.off('keydown-LEFT');
     this.input.keyboard.off('keydown-RIGHT');
 
-    // place or move a plank (use matter images so visuals are attached)
+    // place or move plank(s) (use matter images so visuals are attached)
+    const planksPerLevel = levelConfig.planksPerLevel || 1;
     this.input.on('pointerdown', pointer => {
       if (!this.simulationStarted) {
-        if (!this.plank) {
-          this.plank = matter.add.image(pointer.x, pointer.y, 'plank', null, {
+        if (this.planks.length < planksPerLevel) {
+          // Add a new plank
+          const newPlank = matter.add.image(pointer.x, pointer.y, 'plank', null, {
             label: 'plank',
             isStatic: true  // keep plank static during placement
           });
-          this.plank.setDisplaySize(120, 20);
+          newPlank.setDisplaySize(120, 20);
           // configure body
-          this.plank.setFriction(this.plankFriction);
-          if (this.plank.setBounce) this.plank.setBounce(this.plankRestitution);
-          else if (this.plank.body) this.plank.body.restitution = this.plankRestitution;
-          this.plankRotation = 0;
-        } else {
-          this.plank.setPosition(pointer.x, pointer.y);
+          newPlank.setFriction(this.plankFriction);
+          if (newPlank.setBounce) newPlank.setBounce(this.plankRestitution);
+          else if (newPlank.body) newPlank.body.restitution = this.plankRestitution;
+          newPlank.plankRotation = 0;
+          this.planks.push(newPlank);
+          console.log('Plank', this.planks.length, '/', planksPerLevel, 'placed');
+        } else if (this.planks.length > 0) {
+          // Move the last plank if all planks already placed
+          const lastPlank = this.planks[this.planks.length - 1];
+          lastPlank.setPosition(pointer.x, pointer.y);
         }
       }
     });
 
     // Plank rotation with arrow keys (left = -5 deg, right = +5 deg)
+    // Single-press rotation handlers (keep for accessibility) - rotate last placed plank
     this.input.keyboard.on('keydown-LEFT', () => {
-      if (this.plank && !this.simulationStarted) {
-        this.plankRotation -= 5;
-        this.plank.setAngle(this.plankRotation);
-        console.log('Plank rotated to:', this.plankRotation, '°');
+      if (this.planks.length > 0 && !this.simulationStarted) {
+        const lastPlank = this.planks[this.planks.length - 1];
+        if (!lastPlank.plankRotation) lastPlank.plankRotation = 0;
+        lastPlank.plankRotation -= 5;
+        lastPlank.setAngle(lastPlank.plankRotation);
+        console.log('Plank rotated to:', lastPlank.plankRotation, '°');
       }
     });
 
     this.input.keyboard.on('keydown-RIGHT', () => {
-      if (this.plank && !this.simulationStarted) {
-        this.plankRotation += 5;
-        this.plank.setAngle(this.plankRotation);
-        console.log('Plank rotated to:', this.plankRotation, '°');
+      if (this.planks.length > 0 && !this.simulationStarted) {
+        const lastPlank = this.planks[this.planks.length - 1];
+        if (!lastPlank.plankRotation) lastPlank.plankRotation = 0;
+        lastPlank.plankRotation += 5;
+        lastPlank.setAngle(lastPlank.plankRotation);
+        console.log('Plank rotated to:', lastPlank.plankRotation, '°');
       }
     });
+
+    // Create cursor keys and additional keys for smooth rotation while held
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.rotateLeftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.rotateRightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     // Wait for UIScene to be ready
     this.time.delayedCall(500, () => {
@@ -131,6 +162,11 @@ export default class GameScene extends Phaser.Scene {
       if (uiScene && uiScene.sys.isActive()) {
         console.log('UIScene is active, setting up startGame listener');
         uiScene.events.on('startGame', this.startSimulation, this);
+        // Listen for rotation events coming from UI buttons
+        this.events.on('rotateLeftStart', () => { this.rotateLeftActive = true; });
+        this.events.on('rotateLeftStop', () => { this.rotateLeftActive = false; });
+        this.events.on('rotateRightStart', () => { this.rotateRightActive = true; });
+        this.events.on('rotateRightStop', () => { this.rotateRightActive = false; });
       }
     });
 
@@ -144,8 +180,29 @@ export default class GameScene extends Phaser.Scene {
         
         const labels = [labelA, labelB];
         if (labels.includes('ball') && labels.includes('basket')) {
-          console.log('✅ BALL HIT BASKET! Calling levelWin()');
-          this.levelWin();
+          // Identify which body is ball and which is basket
+          let ballBody = null;
+          let basketBody = null;
+          if (labelA === 'ball') ballBody = pair.bodyA;
+          if (labelB === 'ball') ballBody = pair.bodyB;
+          if (labelA === 'basket') basketBody = pair.bodyA;
+          if (labelB === 'basket') basketBody = pair.bodyB;
+
+          // Read Y positions robustly
+          const ballY = (ballBody && ballBody.position && ballBody.position.y) || (ballBody && ballBody.gameObject && ballBody.gameObject.y) || 0;
+          const basketY = (basketBody && basketBody.position && basketBody.position.y) || (basketBody && basketBody.gameObject && basketBody.gameObject.y) || 0;
+
+          console.log('Basket collision positions: ballY=', ballY, ' basketY=', basketY);
+
+          // Only count as a win if the ball is coming from above the basket
+          // Use a small tolerance to account for sensor size and minor overlaps
+          const TOLERANCE = 6;
+          if (ballY < basketY - TOLERANCE) {
+            console.log('✅ BALL ENTERED BASKET FROM TOP — awarding win');
+            this.levelWin();
+          } else {
+            console.log('Ignored basket contact — ball not above basket (likely from below)');
+          }
         }
       });
     };
@@ -236,11 +293,36 @@ export default class GameScene extends Phaser.Scene {
   levelFail() {
     console.log('Level Failed');
     this.levelActive = false;
-    // Emit failure on this scene events so UIScene can listen
-    this.events.emit('levelFailed', { level: this.currentLevel, score: this.score });
-    const matter = this.matter || (this.sys && this.sys.matter) || null;
-    if (matter && matter.world && matter.world.pause) {
-      try { matter.world.pause(); } catch (e) { /* ignore */ }
+    this.ballsRemaining--;
+    console.log('Ball lost. Balls remaining:', this.ballsRemaining);
+    
+    if (this.ballsRemaining <= 0) {
+      console.log('No balls remaining - Game Over');
+      this.events.emit('levelFailed', { level: this.currentLevel, score: this.score });
+      // Pause physics only on full game over
+      const matter = this.matter || (this.sys && this.sys.matter) || null;
+      if (matter && matter.world && matter.world.pause) {
+        try { matter.world.pause(); } catch (e) { /* ignore */ }
+      }
+    } else {
+      console.log('Restarting level with', this.ballsRemaining, 'balls remaining');
+      this.events.emit('ballLost', { ballsRemaining: this.ballsRemaining, score: this.score });
+      // Reset planks for retry (don't pause physics, allow immediate retry)
+      this.time.delayedCall(500, () => {
+        this.clearPlanks();
+        this.ball = null;
+        this.simulationStarted = false;
+        this.levelActive = false;
+      });
+    }
+  }
+
+  clearPlanks() {
+    if (this.planks && this.planks.length > 0) {
+      this.planks.forEach(p => {
+        try { p.destroy(); } catch (e) { console.log('Error destroying plank:', e); }
+      });
+      this.planks = [];
     }
   }
 
@@ -249,6 +331,9 @@ export default class GameScene extends Phaser.Scene {
     const idx = Math.max(0, Math.min(this.levels.length - 1, levelNum - 1));
     const cfg = this.levels[idx];
     const matter = this.matter || (this.sys && this.sys.matter) || null;
+    
+    // Clear previous planks
+    this.clearPlanks();
 
     // Clear previous basket if any
     if (this.basketBody && matter && matter.world) {
@@ -299,8 +384,8 @@ export default class GameScene extends Phaser.Scene {
       });
     }
 
-    // reset plank and ball
-    if (this.plank) { this.plank.destroy(); this.plank = null; }
+    // reset planks and ball
+    this.clearPlanks();
     if (this.ball) { if (this.ball.gameObject) this.ball.gameObject.destroy(); if (this.ball.destroy) this.ball.destroy(); this.ball = null; }
   }
 
@@ -339,14 +424,7 @@ export default class GameScene extends Phaser.Scene {
       this.obstacles = []; 
     }
     
-    if (this.plank) { 
-      try {
-        this.plank.destroy(); 
-      } catch (e) {
-        console.log('Error destroying plank:', e);
-      }
-      this.plank = null; 
-    }
+    this.clearPlanks();
     
     if (this.ball) { 
       try {
@@ -378,6 +456,25 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // plank is a MatterImage when placed; no manual sync needed
+
+    // Smooth rotation while arrow keys (or A/D) or on-screen buttons are active - rotate last plank
+    if (this.planks.length > 0 && !this.simulationStarted) {
+      const lastPlank = this.planks[this.planks.length - 1];
+      if (!lastPlank.plankRotation) lastPlank.plankRotation = 0;
+      let rotated = false;
+      if ((this.cursors && this.cursors.left.isDown) || (this.rotateLeftKey && this.rotateLeftKey.isDown) || this.rotateLeftActive) {
+        lastPlank.plankRotation -= this.rotateSpeed;
+        rotated = true;
+      }
+      if ((this.cursors && this.cursors.right.isDown) || (this.rotateRightKey && this.rotateRightKey.isDown) || this.rotateRightActive) {
+        lastPlank.plankRotation += this.rotateSpeed;
+        rotated = true;
+      }
+      if (rotated) {
+        if (lastPlank.setAngle) lastPlank.setAngle(lastPlank.plankRotation);
+        else if (lastPlank.angle !== undefined) lastPlank.angle = lastPlank.plankRotation;
+      }
+    }
 
     // Check if ball is moving during gameplay
     if (this.levelActive && this.ball) {

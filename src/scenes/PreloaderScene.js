@@ -9,7 +9,8 @@ export default class PreloaderScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.loadingText = this.add.text(width / 2, height / 2 - 30, 'Loading...', {
       fontSize: '24px',
-      fill: '#333'
+      fill: '#333',
+      fontFamily: 'Fredoka'
     }).setOrigin(0.5);
 
     this.loadingBarBg = this.add.graphics();

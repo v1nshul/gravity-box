@@ -6,19 +6,41 @@ export default class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    const { width } = this.cameras.main;
+    const { width, height } = this.cameras.main;
 
-    this.add.text(width / 2, 80, 'Gravity Box', {
-      fontSize: '48px',
-      fill: '#222'
+    // Title with gradient effect (using shadow for visual depth)
+    const title = this.add.text(width / 2, height / 2 - 150, '🎮 GRAVITY BOX', {
+      fontSize: '56px',
+      fill: '#667eea',
+      fontStyle: 'bold',
+      fontFamily: 'Fredoka'
+    }).setOrigin(0.5);
+    title.setStroke('#764ba2', 3);
+
+    // Subtitle
+    this.add.text(width / 2, height / 2 - 80, 'Guide the ball into the basket', {
+      fontSize: '20px',
+      fill: '#555',
+      fontStyle: 'italic',
+      fontFamily: 'Fredoka'
     }).setOrigin(0.5);
 
-    const startButton = this.add.text(width / 2, 300, 'Start Game', {
+    const startButton = this.add.text(width / 2, height / 2 + 80, '▶ START GAME', {
       fontSize: '32px',
       fill: '#fff',
-      backgroundColor: '#007bff',
-      padding: { x: 20, y: 10 }
+      backgroundColor: '#27ae60',
+      padding: { x: 30, y: 15 },
+      fontFamily: 'Fredoka',
+      fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    startButton.on('pointerover', () => {
+      startButton.setScale(1.08).setStyle({ backgroundColor: '#229954' });
+    });
+
+    startButton.on('pointerout', () => {
+      startButton.setScale(1).setStyle({ backgroundColor: '#27ae60' });
+    });
 
     startButton.on('pointerdown', () => {
       console.log('Start Game clicked!');

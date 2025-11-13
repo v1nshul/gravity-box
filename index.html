@@ -4,6 +4,37 @@
     <meta charset="utf-8" />
     <title>Gravity Box</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Fredoka', 'Nunito', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      #game-container {
+        filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.3));
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      canvas {
+        display: block;
+        background: linear-gradient(180deg, #f0f4f8 0%, #d9e2ec 100%);
+      }
+    </style>
   </head>
   <body>
     <div id="game-container"></div>

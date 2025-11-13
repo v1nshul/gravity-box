@@ -7,8 +7,8 @@ import UIScene from './scenes/UIScene.js';
 const config = {
   type: Phaser.AUTO,
   width: 800,
-  height: 600,
-  backgroundColor: '#e0e0e0',
+  height: 680,
+  backgroundColor: '#f5f7fa',
   physics: {
     default: 'matter',
     matter: {
