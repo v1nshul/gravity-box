@@ -20,7 +20,6 @@ export default class GameScene extends Phaser.Scene {
     this.basketBody = null; // Store custom basket body separately
     this.currentLevel = 1;
     this.score = 0;
-    this.maxLevels = 5;
     this.levelActive = false; // track if level is in progress
     this.ballStillTimer = null; // timer to detect when ball stops moving
     this.ballLastPos = { x: 0, y: 0 }; // track ball position to detect stillness
@@ -47,6 +46,9 @@ export default class GameScene extends Phaser.Scene {
       { basket: { x: 600, y: 520 }, obstacles: [{ x: 400, y: 350, w: 220, h: 20, angle: -30 }, { x: 200, y: 300, w: 120, h: 20, angle: 10 }], planksPerLevel: 2, balls: 3 },
       { basket: { x: 400, y: 520 }, obstacles: [{ x: 300, y: 360, w: 160, h: 20, angle: 0 }, { x: 500, y: 300, w: 160, h: 20, angle: 15 }], planksPerLevel: 3, balls: 3 }
     ];
+
+    // track max levels based on current level definitions
+    this.maxLevels = this.levels.length;
   }
 
   create(levelData) {
@@ -234,7 +236,9 @@ export default class GameScene extends Phaser.Scene {
     // Ball (dynamic circle body with visual) - add high restitution so it bounces
     const matter = this.matter || (this.sys && this.sys.matter) || null;
     if (matter && matter.add) {
-      this.ball = matter.add.image(400, 50, 'ball', null, { label: 'ball', isSensor: false });
+      // slight horizontal jitter so every run feels a bit less robotic
+      const spawnX = 360 + Math.random() * 80;
+      this.ball = matter.add.image(spawnX, 50, 'ball', null, { label: 'ball', isSensor: false });
       this.ball.setDisplaySize(40, 40);
       // set circle body to match display
       if (this.ball.setCircle) this.ball.setCircle(20);
@@ -255,15 +259,17 @@ export default class GameScene extends Phaser.Scene {
       this.ball.gameObject = ballVisual;
     }
 
-    // Make plank static so it becomes an immovable guide
-    if (this.plank) {
-      if (this.plank.setStatic) {
-        this.plank.setStatic(true);
-      } else if (MatterJS && MatterJS.Body) {
-        MatterJS.Body.setStatic(this.plank, true);
-      } else {
-        this.plank.isStatic = true;
-      }
+    // Make all placed planks static so they become immovable guides
+    if (this.planks && this.planks.length) {
+      this.planks.forEach(plank => {
+        if (plank && plank.setStatic) {
+          plank.setStatic(true);
+        } else if (plank && MatterJS && MatterJS.Body) {
+          MatterJS.Body.setStatic(plank, true);
+        } else if (plank) {
+          plank.isStatic = true;
+        }
+      });
     }
 
     // Start a timer to detect when ball stops moving (after 3 seconds of no movement, fail)

@@ -7,21 +7,21 @@ export default class PreloaderScene extends Phaser.Scene {
 
   preload() {
     const { width, height } = this.cameras.main;
-    this.loadingText = this.add.text(width / 2, height / 2 - 30, 'Loading...', {
-      fontSize: '24px',
-      fill: '#333',
-      fontFamily: 'Fredoka'
+    this.loadingText = this.add.text(width / 2, height / 2 - 30, 'Loading Gravity Box…', {
+      fontSize: '20px',
+      fill: '#111827',
+      fontFamily: 'Nunito'
     }).setOrigin(0.5);
 
     this.loadingBarBg = this.add.graphics();
-    this.loadingBarBg.fillStyle(0xcccccc, 1);
+    this.loadingBarBg.fillStyle(0xe5e7eb, 1);
     this.loadingBarBg.fillRect(width / 2 - 150, height / 2, 300, 20);
 
     this.loadingBar = this.add.graphics();
 
     this.load.on('progress', (value) => {
       this.loadingBar.clear();
-      this.loadingBar.fillStyle(0x007bff, 1);
+      this.loadingBar.fillStyle(0x4f46e5, 1);
       this.loadingBar.fillRect(width / 2 - 150, height / 2, 300 * value, 20);
     });
 

@@ -64,51 +64,51 @@ export default class UIScene extends Phaser.Scene {
 
     // Display score, level, and high score with enhanced styling
     console.log('Creating UI elements...');
-    this.levelText = this.add.text(20, 15, `🎮 Level: ${this.currentLevel}`, {
-      fontSize: '22px',
-      fill: '#667eea',
+    this.levelText = this.add.text(20, 15, `Level ${this.currentLevel}`, {
+      fontSize: '20px',
+      fill: '#111827',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
+      fontFamily: 'Nunito'
     });
     console.log('✅ Level text created');
 
-    this.scoreText = this.add.text(400, 15, `⭐ Score: ${this.currentScore}`, {
-      fontSize: '22px',
-      fill: '#667eea',
+    this.scoreText = this.add.text(400, 15, `Score: ${this.currentScore}`, {
+      fontSize: '20px',
+      fill: '#111827',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
+      fontFamily: 'Nunito'
     }).setOrigin(0.5, 0);
     console.log('✅ Score text created');
 
-    this.highScoreText = this.add.text(780, 15, `🏆 High: ${this.highScore}`, {
-      fontSize: '22px',
-      fill: '#764ba2',
+    this.highScoreText = this.add.text(780, 15, `Best: ${this.highScore}`, {
+      fontSize: '20px',
+      fill: '#4f46e5',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
+      fontFamily: 'Nunito'
     }).setOrigin(1, 0);
     console.log('✅ High score text created');
 
     // Display balls remaining
-    this.ballsText = this.add.text(400, 50, `🔴 Balls: ${this.gameScene?.ballsRemaining || 3}`, {
-      fontSize: '20px',
-      fill: '#e74c3c',
+    this.ballsText = this.add.text(400, 50, `Balls: ${this.gameScene?.ballsRemaining || 3}`, {
+      fontSize: '18px',
+      fill: '#b91c1c',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
-    }).setOrigin(0.5, 0).setStroke('#c0392b', 2);
+      fontFamily: 'Nunito'
+    }).setOrigin(0.5, 0);
 
     console.log('✅ Balls text created');
 
     // Move buttons below the game area (y=620, below 600px game box)
-    this.playButton = this.add.text(400, 620, '▶ PLAY', {
-      fontSize: '24px',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
+    this.playButton = this.add.text(400, 620, 'Play', {
+      fontSize: '22px',
+      fill: '#ffffff',
+      backgroundColor: '#22c55e',
       padding: { x: 24, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(1000);
-    this.playButton.on('pointerover', () => this.playButton.setScale(1.05).setStyle({ backgroundColor: '#229954' }));
-    this.playButton.on('pointerout', () => this.playButton.setScale(1).setStyle({ backgroundColor: '#27ae60' }));
+    this.playButton.on('pointerover', () => this.playButton.setScale(1.05).setStyle({ backgroundColor: '#16a34a' }));
+    this.playButton.on('pointerout', () => this.playButton.setScale(1).setStyle({ backgroundColor: '#22c55e' }));
     console.log('✅ Play button created at y=620');
 
     this.playButton.on('pointerdown', () => {
@@ -118,27 +118,27 @@ export default class UIScene extends Phaser.Scene {
     });
 
     // On-screen rotate buttons below game area (useful for touch)
-    this.leftRotateBtn = this.add.text(200, 620, '⬅ ROTATE', {
-      fontSize: '18px',
-      fill: '#fff',
-      backgroundColor: '#3498db',
-      padding: { x: 14, y: 10 },
-      fontFamily: 'Fredoka',
+    this.leftRotateBtn = this.add.text(200, 620, 'Rotate Left', {
+      fontSize: '16px',
+      fill: '#ffffff',
+      backgroundColor: '#0ea5e9',
+      padding: { x: 16, y: 10 },
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(1000);
-    this.leftRotateBtn.on('pointerover', () => this.leftRotateBtn.setScale(1.05).setStyle({ backgroundColor: '#2980b9' }));
-    this.leftRotateBtn.on('pointerout', () => this.leftRotateBtn.setScale(1).setStyle({ backgroundColor: '#3498db' }));
+    this.leftRotateBtn.on('pointerover', () => this.leftRotateBtn.setScale(1.05).setStyle({ backgroundColor: '#0284c7' }));
+    this.leftRotateBtn.on('pointerout', () => this.leftRotateBtn.setScale(1).setStyle({ backgroundColor: '#0ea5e9' }));
 
-    this.rightRotateBtn = this.add.text(600, 620, 'ROTATE ➜', {
-      fontSize: '18px',
-      fill: '#fff',
-      backgroundColor: '#3498db',
-      padding: { x: 14, y: 10 },
-      fontFamily: 'Fredoka',
+    this.rightRotateBtn = this.add.text(600, 620, 'Rotate Right', {
+      fontSize: '16px',
+      fill: '#ffffff',
+      backgroundColor: '#0ea5e9',
+      padding: { x: 16, y: 10 },
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(1000);
-    this.rightRotateBtn.on('pointerover', () => this.rightRotateBtn.setScale(1.05).setStyle({ backgroundColor: '#2980b9' }));
-    this.rightRotateBtn.on('pointerout', () => this.rightRotateBtn.setScale(1).setStyle({ backgroundColor: '#3498db' }));
+    this.rightRotateBtn.on('pointerover', () => this.rightRotateBtn.setScale(1.05).setStyle({ backgroundColor: '#0284c7' }));
+    this.rightRotateBtn.on('pointerout', () => this.rightRotateBtn.setScale(1).setStyle({ backgroundColor: '#0ea5e9' }));
 
     // Emit rotate events to GameScene so it can toggle rotation flags
     this.leftRotateBtn.on('pointerdown', () => {
@@ -196,40 +196,40 @@ export default class UIScene extends Phaser.Scene {
   onBallLost(data) {
     console.log('Ball lost - balls remaining:', data.ballsRemaining);
     if (this.ballsText) {
-      this.ballsText.setText(`🔴 Balls: ${data.ballsRemaining}`);
+      this.ballsText.setText(`Balls: ${data.ballsRemaining}`);
     }
     
     // Show restart UI immediately when a ball is lost
     const { width } = this.cameras.main;
     
-    this.add.text(width / 2, 150, '❌ Ball Lost!', {
+    this.add.text(width / 2, 150, 'Ball lost', {
       fontSize: '44px',
-      fill: '#e74c3c',
+      fill: '#b91c1c',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
-    }).setOrigin(0.5).setDepth(999).setStroke('#c0392b', 3);
+      fontFamily: 'Nunito'
+    }).setOrigin(0.5).setDepth(999);
 
-    const restartBtn = this.add.text(width / 2 - 110, 250, '🔄 Retry', {
+    const restartBtn = this.add.text(width / 2 - 110, 250, 'Retry', {
       fontSize: '26px',
-      fill: '#fff',
-      backgroundColor: '#e74c3c',
+      fill: '#ffffff',
+      backgroundColor: '#0ea5e9',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    restartBtn.on('pointerover', () => restartBtn.setScale(1.05).setStyle({ backgroundColor: '#c0392b' }));
-    restartBtn.on('pointerout', () => restartBtn.setScale(1).setStyle({ backgroundColor: '#e74c3c' }));
+    restartBtn.on('pointerover', () => restartBtn.setScale(1.05).setStyle({ backgroundColor: '#0369a1' }));
+    restartBtn.on('pointerout', () => restartBtn.setScale(1).setStyle({ backgroundColor: '#0ea5e9' }));
 
-    const menuBtn = this.add.text(width / 2 + 110, 250, '🏠 Menu', {
+    const menuBtn = this.add.text(width / 2 + 110, 250, 'Main menu', {
       fontSize: '26px',
-      fill: '#fff',
-      backgroundColor: '#3498db',
+      fill: '#ffffff',
+      backgroundColor: '#4b5563',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    menuBtn.on('pointerover', () => menuBtn.setScale(1.05).setStyle({ backgroundColor: '#2980b9' }));
-    menuBtn.on('pointerout', () => menuBtn.setScale(1).setStyle({ backgroundColor: '#3498db' }));
+    menuBtn.on('pointerover', () => menuBtn.setScale(1.05).setStyle({ backgroundColor: '#374151' }));
+    menuBtn.on('pointerout', () => menuBtn.setScale(1).setStyle({ backgroundColor: '#4b5563' }));
 
     restartBtn.on('pointerdown', () => {
       console.log('Retry clicked after ball loss');
@@ -259,42 +259,42 @@ export default class UIScene extends Phaser.Scene {
       this.highScore = this.currentScore;
       localStorage.setItem('gravityBoxHighScore', this.highScore.toString());
       if (this.highScoreText) {
-        this.highScoreText.setText(`🏆 High: ${this.highScore}`);
+        this.highScoreText.setText(`Best: ${this.highScore}`);
       }
     }
 
     // Update score display
     if (this.scoreText) {
-      this.scoreText.setText(`⭐ Score: ${this.currentScore}`);
+      this.scoreText.setText(`Score: ${this.currentScore}`);
     }
 
     // Win message with enhanced styling
-    this.add.text(width / 2, 150, '🎉 LEVEL COMPLETE!', {
+    this.add.text(width / 2, 150, 'Level complete', {
       fontSize: '48px',
-      fill: '#27ae60',
+      fill: '#16a34a',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
-    }).setOrigin(0.5).setDepth(999).setStroke('#1e8449', 3);
+      fontFamily: 'Nunito'
+    }).setOrigin(0.5).setDepth(999);
 
     // Points earned
-    this.add.text(width / 2, 220, `+${100 * this.currentLevel} Points!`, {
+    this.add.text(width / 2, 220, `+${100 * this.currentLevel} points`, {
       fontSize: '32px',
-      fill: '#f39c12',
+      fill: '#ca8a04',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
+      fontFamily: 'Nunito'
     }).setOrigin(0.5).setDepth(999);
 
     // Next Level button
-    const nextButton = this.add.text(width / 2 - 110, 310, '⛭️ NEXT LEVEL', {
+    const nextButton = this.add.text(width / 2 - 110, 310, 'Next level', {
       fontSize: '24px',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
+      fill: '#ffffff',
+      backgroundColor: '#22c55e',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    nextButton.on('pointerover', () => nextButton.setScale(1.05).setStyle({ backgroundColor: '#229954' }));
-    nextButton.on('pointerout', () => nextButton.setScale(1).setStyle({ backgroundColor: '#27ae60' }));
+    nextButton.on('pointerover', () => nextButton.setScale(1.05).setStyle({ backgroundColor: '#16a34a' }));
+    nextButton.on('pointerout', () => nextButton.setScale(1).setStyle({ backgroundColor: '#22c55e' }));
 
     nextButton.on('pointerdown', () => {
       console.log('Next Level button pointerdown event fired');
@@ -302,16 +302,16 @@ export default class UIScene extends Phaser.Scene {
     });
 
     // Restart button
-    const restartButton = this.add.text(width / 2 + 110, 310, '🔄 RESTART', {
+    const restartButton = this.add.text(width / 2 + 110, 310, 'Restart level', {
       fontSize: '24px',
-      fill: '#fff',
-      backgroundColor: '#3498db',
+      fill: '#ffffff',
+      backgroundColor: '#0ea5e9',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    restartButton.on('pointerover', () => restartButton.setScale(1.05).setStyle({ backgroundColor: '#2980b9' }));
-    restartButton.on('pointerout', () => restartButton.setScale(1).setStyle({ backgroundColor: '#3498db' }));
+    restartButton.on('pointerover', () => restartButton.setScale(1.05).setStyle({ backgroundColor: '#0369a1' }));
+    restartButton.on('pointerout', () => restartButton.setScale(1).setStyle({ backgroundColor: '#0ea5e9' }));
 
     restartButton.on('pointerdown', () => {
       console.log('Restart button pointerdown event fired');
@@ -326,31 +326,31 @@ export default class UIScene extends Phaser.Scene {
     this.currentScore = data.score || 0;
 
     // Failure message
-    this.add.text(width / 2, 150, '☠️ GAME OVER', {
+    this.add.text(width / 2, 150, 'Game over', {
       fontSize: '48px',
-      fill: '#e74c3c',
+      fill: '#b91c1c',
       fontStyle: 'bold',
-      fontFamily: 'Fredoka'
-    }).setOrigin(0.5).setDepth(999).setStroke('#c0392b', 3);
+      fontFamily: 'Nunito'
+    }).setOrigin(0.5).setDepth(999);
 
     // Final score display
-    this.add.text(width / 2, 220, `Final Score: ${this.currentScore}`, {
+    this.add.text(width / 2, 220, `Final score: ${this.currentScore}`, {
       fontSize: '28px',
-      fill: '#555',
-      fontFamily: 'Fredoka'
+      fill: '#4b5563',
+      fontFamily: 'Nunito'
     }).setOrigin(0.5).setDepth(999);
 
     // Retry button
-    const retryButton = this.add.text(width / 2 - 110, 280, '🔄 TRY AGAIN', {
+    const retryButton = this.add.text(width / 2 - 110, 280, 'Try again', {
       fontSize: '26px',
-      fill: '#fff',
-      backgroundColor: '#3498db',
+      fill: '#ffffff',
+      backgroundColor: '#0ea5e9',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    retryButton.on('pointerover', () => retryButton.setScale(1.05).setStyle({ backgroundColor: '#2980b9' }));
-    retryButton.on('pointerout', () => retryButton.setScale(1).setStyle({ backgroundColor: '#3498db' }));
+    retryButton.on('pointerover', () => retryButton.setScale(1.05).setStyle({ backgroundColor: '#0369a1' }));
+    retryButton.on('pointerout', () => retryButton.setScale(1).setStyle({ backgroundColor: '#0ea5e9' }));
 
     retryButton.on('pointerdown', () => {
       console.log('Retry button clicked');
@@ -360,16 +360,16 @@ export default class UIScene extends Phaser.Scene {
     });
 
     // Back to menu
-    const menuButton = this.add.text(width / 2 + 110, 280, '🏠 MAIN MENU', {
+    const menuButton = this.add.text(width / 2 + 110, 280, 'Main menu', {
       fontSize: '26px',
-      fill: '#fff',
-      backgroundColor: '#e74c3c',
+      fill: '#ffffff',
+      backgroundColor: '#4b5563',
       padding: { x: 20, y: 12 },
-      fontFamily: 'Fredoka',
+      fontFamily: 'Nunito',
       fontStyle: 'bold'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(999);
-    menuButton.on('pointerover', () => menuButton.setScale(1.05).setStyle({ backgroundColor: '#c0392b' }));
-    menuButton.on('pointerout', () => menuButton.setScale(1).setStyle({ backgroundColor: '#e74c3c' }));
+    menuButton.on('pointerover', () => menuButton.setScale(1.05).setStyle({ backgroundColor: '#374151' }));
+    menuButton.on('pointerout', () => menuButton.setScale(1).setStyle({ backgroundColor: '#4b5563' }));
 
     menuButton.on('pointerdown', () => {
       // stop game and ui and return to menu
